@@ -15,9 +15,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
     - name: Build Docker image
       run: |
         docker build -t ncc02/fastapi-app .
@@ -31,3 +28,22 @@ jobs:
     - name: Push Docker image
       run: |
         docker push ncc02/fastapi-app
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H 103.167.89.238 >> ~/.ssh/known_hosts
+
+    - name: SSH into VPS and update container
+      uses: appleboy/ssh-action@v0.1.0
+      with:
+  
+        username: ${{ secrets.VPS_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /irrigation-vps && docker-compose pull && docker-compose up -d
