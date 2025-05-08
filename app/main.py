@@ -25,3 +25,8 @@ app.include_router(sensors.router, prefix="/api", tags=["sensors"])
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"} 
+
+# Endpoint kiểm tra sức khỏe
+@app.get("/test")
+async def health_check():
+    return {"status": "ci-cd healthy"} 
