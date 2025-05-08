@@ -28,5 +28,5 @@ async def health_check():
 
 # Endpoint kiểm tra sức khỏe
 @app.get("/test")
-async def health_check():
+async def test_check():
     return {"status": "ci-cd healthy"} 
