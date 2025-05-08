@@ -41,6 +41,8 @@
             port: 22
             script: |
               cd /irrigation-vps
+              git pull origin main  # Add this line to pull latest code
               docker-compose pull
+              docker-compose down   # Add this to ensure clean deployment
               docker-compose up -d
 
