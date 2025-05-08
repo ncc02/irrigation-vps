@@ -1,49 +1,46 @@
-name: CI/CD for FastAPI App
+  name: CI/CD for FastAPI App
 
-on:
-  push:
-    branches:
-      - main  # Thực hiện CI/CD khi có thay đổi trên nhánh main
-  pull_request:
-    branches:
-      - main
+  on:
+    push:
+      branches:
+        - main  # Thực hiện CI/CD khi có thay đổi trên nhánh main
+    pull_request:
+      branches:
+        - main
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Build Docker image
-      run: |
-        docker build -t ncc02/fastapi-app .
+      - name: Build Docker image
+        run: |
+          docker build -t ncc02/fastapi-app .
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Push Docker image
-      run: |
-        docker push ncc02/fastapi-app
+      - name: Push Docker image
+        run: |
+          docker push ncc02/fastapi-app
 
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Set up SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H 103.167.89.238 >> ~/.ssh/known_hosts
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Deploy via SSH
+          uses: appleboy/ssh-action@v0.1.10
+          with:
+            host: 103.167.89.238
+            username: ${{ secrets.VPS_USERNAME }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            port: 22
+            script: |
+              cd /irrigation-vps
+              docker-compose pull
+              docker-compose up -d
 
-    - name: SSH into VPS and update container
-      uses: appleboy/ssh-action@v0.1.0
-      with:
-  
-        username: ${{ secrets.VPS_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /irrigation-vps && docker-compose pull && docker-compose up -d
