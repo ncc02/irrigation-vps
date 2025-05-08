@@ -12,7 +12,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Cho phép tất cả các nguồn
-    allow_credentials=True,
+    allow_credentials=True, # Cho phép các header
     allow_methods=["*"],  # Cho phép tất cả các phương thức
     allow_headers=["*"],  # Cho phép tất cả các header
 )
