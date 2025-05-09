@@ -21,6 +21,11 @@ app.add_middleware(
 app.include_router(irrigation.router, prefix="/api", tags=["irrigation"])
 app.include_router(sensors.router, prefix="/api", tags=["sensors"])
 
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello World"}
+
 # Endpoint kiểm tra sức khỏe
 @app.get("/health")
 async def health_check():
