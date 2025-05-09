@@ -35,3 +35,7 @@ async def health_check():
 @app.get("/test")
 async def test_check():
     return {"status": "ci-cd healthy"} 
+
+@app.get("/test2")
+async def test_check():
+    return {"status": "ci-cd healthy 2"} 
